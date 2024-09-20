@@ -133,12 +133,12 @@
         }
 
         function getBotResponse(userMessage) {
-            if (userMessage.toLowerCase() === 'hi') {
+            if (userMessage.toLowerCase() === 't') {
                 const letters = generateRandomLetters();
                 showCopyPopup(letters);  // Show popup for copying
                 return `Mã ngẫu nhiên của bạn là: ${letters}`;
             } else {
-                return 'Hãy nhập chữ "hi" để nhận mã 10 chữ cái ngẫu nhiên.';
+                return 'Hãy nhập chữ "t" để nhận mã 10 chữ cái ngẫu nhiên.';
             }
         }
 
