@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DVC IPA - GHOST</title>
+    <title>DVC IPA - Ghost Chatbot</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f5;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,48 +20,70 @@
         }
         .chat-container {
             width: 100%;
-            max-width: 400px;
-            margin: auto;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            max-width: 450px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
-            height: 80vh;
+            overflow: hidden;
+            transition: transform 0.3s, opacity 0.3s;
+            backdrop-filter: blur(10px);
         }
-        .chat-header {
-            background-color: #4CAF50;
-            padding: 15px;
+        .date-time {
+            padding: 10px;
+            background: linear-gradient(to right, #00796B, #004D40);
             color: white;
             text-align: center;
-            font-size: 1.4em;
+            font-size: 1em;
+            font-weight: bold;
+            animation: colorChange 2s infinite linear;
+        }
+        @keyframes colorChange {
+            0% { color: #FF0000; }
+            25% { color: #00FF00; }
+            50% { color: #0000FF; }
+            75% { color: #FFFF00; }
+            100% { color: #FF00FF; }
+        }
+        .chat-header {
+            background-color: #00796B;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 1.6em;
             font-weight: bold;
         }
         .chat-messages {
             flex: 1;
-            padding: 15px;
+            padding: 20px;
+            background: #FFFFFF;
             overflow-y: auto;
-            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
         }
         .chat-input-container {
             display: flex;
-            border-top: 1px solid #ddd;
-            padding: 10px;
-            background: #fff;
+            padding: 15px 20px;
+            border-top: 1px solid #DDD;
+            background: #F7F7F7;
         }
         .chat-input {
             flex-grow: 1;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            padding: 10px 15px;
+            border: 1px solid #CCC;
+            border-radius: 50px;
+            padding: 12px 20px;
             font-size: 1em;
             outline: none;
+            transition: border-color 0.3s;
+        }
+        .chat-input:focus {
+            border-color: #00796B;
         }
         .chat-button {
             margin-left: 10px;
-            padding: 10px 15px;
-            background-color: #4CAF50;
+            padding: 10px 20px;
+            background-color: #00796B;
             color: white;
             border: none;
             border-radius: 25px;
@@ -67,62 +91,83 @@
             font-size: 1em;
             outline: none;
             transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .chat-button:hover {
-            background-color: #388E3C;
+            background-color: #004D40;
+        }
+        .chat-button i {
+            margin-left: 5px;
         }
         .user-message, .bot-message {
-            padding: 10px 15px;
+            padding: 10px 20px;
             border-radius: 20px;
             margin: 10px 0;
             max-width: 80%;
             word-wrap: break-word;
+            font-size: 1em;
+            display: inline-block;
+            clear: both;
             position: relative;
-            font-size: 0.9em;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .user-message {
             align-self: flex-end;
-            background-color: #4CAF50;
+            background-color: #81C784;
             color: white;
             border-bottom-right-radius: 0;
         }
         .bot-message {
             align-self: flex-start;
-            background-color: #e0e0e0;
+            background-color: #E0E0E0;
             color: #333;
             border-bottom-left-radius: 0;
         }
     </style>
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">Chatbot GHOST DVC IPA</div>
+        <div class="date-time" id="date-time">Loading date and time...</div>
+        <div class="chat-header">GHOST - DVC IPA</div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-container">
-            <input type="text" id="chat-input" class="chat-input" onkeypress="handleKeyPress(event)" placeholder="Type a message..." />
-            <button class="chat-button" onclick="sendMessage()">Send</button>
+            <input type="text" id="chat-input" class="chat-input" onkeypress="handleKeyPress(event)" placeholder="Type a message..."/>
+            <button class="chat-button" onclick="sendMessage()">
+                <span>Send</span> <i class="fas fa-paper-plane"></i>
+            </button>
         </div>
     </div>
-    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
         function handleKeyPress(event) {
             if (event.key === 'Enter') sendMessage();
         }
-
+        
         function sendMessage() {
             const chatInput = document.getElementById('chat-input');
             const message = chatInput.value.trim();
             if (message) {
                 addMessage('user', message);
                 const botResponse = getBotResponse(message);
-                addMessage('bot', botResponse);
+                setTimeout(() => addMessage('bot', botResponse), 500);
                 chatInput.value = '';
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Vui lòng nhập tin nhắn',
+                    text: 'Bạn không thể gửi một tin nhắn trống.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             }
         }
-
+        
         function addMessage(sender, message) {
             const chatMessages = document.getElementById('chat-messages');
             const messageElement = document.createElement('div');
@@ -131,38 +176,64 @@
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-
+        
         function getBotResponse(userMessage) {
             if (userMessage.toLowerCase() === 't') {
-                const letters = generateRandomLetters();
-                showCopyPopup(letters);  // Show popup for copying
-                return `Mã ngẫu nhiên của bạn là: ${letters}`;
+                const randomNumbers = generateRandomNumbers();
+                const response = `GOLDEN${randomNumbers}`;
+                showCopyPopup(response);
+                return `Mã ngẫu nhiên của bạn là: ${response}`;
             } else {
-                return 'Hãy nhập chữ "t" để nhận mã 10 chữ cái ngẫu nhiên.';
+                return 'Hãy nhập chữ "t" để nhận mã ngẫu nhiên gồm chữ "GOLDEN" và 10 số ngẫu nhiên.';
             }
         }
-
-        function generateRandomLetters() {
-            const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-            return Array.from({ length: 10 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+        
+        function generateRandomNumbers() {
+            return Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join('');
         }
-
-        function showCopyPopup(letters) {
+        
+        function showCopyPopup(code) {
             Swal.fire({
                 title: 'Mã ngẫu nhiên của bạn',
-                text: `Mã ngẫu nhiên của bạn là: ${letters}`,
+                text: `Mã ngẫu nhiên của bạn là: ${code}`,
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonText: 'Copy',
                 cancelButtonText: 'Close'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    navigator.clipboard.writeText(letters).then(() => {
-                        Swal.fire('Đã sao chép!', 'Mã đã được sao chép vào bộ nhớ.', 'success');
+                    navigator.clipboard.writeText(code).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã sao chép!',
+                            text: 'Mã đã được sao chép vào bộ nhớ.',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     });
                 }
             });
         }
+        
+        function updateDateTime() {
+            const now = new Date();
+            const formattedDateTime = now.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('date-time').textContent = formattedDateTime;
+        }
+        
+        setInterval(updateDateTime, 1000);
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            updateDateTime();
+        });
     </script>
 </body>
 </html>
